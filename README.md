@@ -146,4 +146,4 @@ Votre projet consiste à present à concevoir et développer une application de 
 Votre travail est de modifier votre code afin de répondre aux besoins définis ci-dessus.
 L'application exploitera des API pour interagir avec la base de données et un contrôle d'accès Utilisateur/Administrateur doit être mis en place.  
 L’application pourra être enrichie avec des fonctionnalités supplémentaires telles que des recommandations de livres, des notifications pour les retours en retard, ou encore des rapports statistiques sur l'utilisation des livres pour améliorer l'expérience utilisateur et la gestion de la bibliothèque.  
-3333df
+3333d
