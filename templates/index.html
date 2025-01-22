@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bibliothèque - Accueil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Accueil</a>
+        <a href="{{ url_for('list_books') }}">Livres</a>
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
+            {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('add_book') }}">Ajouter un livre</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Déconnexion ({{ session.get('username') }})</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Connexion</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1>Bienvenue à la Bibliothèque</h1>
+        
+        {% if not session.get('user_id') %}
+            <p>Veuillez vous connecter pour emprunter des livres.</p>
+        {% else %}
+            <p>Bonjour {{ session.get('username') }} !</p>
+        {% endif %}
+    </div>
+</body>
+</html>

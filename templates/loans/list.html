@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bibliothèque - Mes emprunts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Accueil</a>
+        <a href="{{ url_for('list_books') }}">Livres</a>
+        <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
+        <a href="{{ url_for('logout') }}">Déconnexion</a>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1>{% if session.get('role') == 'admin' %}Tous les emprunts{% else %}Mes emprunts{% endif %}</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Livre</th>
+                    {% if session.get('role') == 'admin' %}
+                        <th>Utilisateur</th>
+                    {% endif %}
+                    <th>Date d'emprunt</th>
+                    <th>Date de retour prévue</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loan in loans %}
+                <tr>
+                    <td>{{ loan.title }}</td>
+                    {% if session.get('role') == 'admin' %}
+                        <td>{{ loan.username }}</td>
+                    {% endif %}
+                    <td>{{ loan.loan_date }}</td>
+                    <td>{{ loan.due_date }}</td>
+                    <td>{{ loan.status }}</td>
+                    <td>
+                        {% if loan.status == 'active' %}
+                            <form action="{{ url_for('return_book', id=loan.id) }}" method="POST">
+                                <button type="submit">Retourner</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

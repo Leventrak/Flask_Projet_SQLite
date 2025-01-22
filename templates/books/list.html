@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bibliothèque - Liste des livres</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Accueil</a>
+        <a href="{{ url_for('list_books') }}">Livres</a>
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
+            {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('add_book') }}">Ajouter un livre</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Déconnexion</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Connexion</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1>Liste des livres</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Auteur</th>
+                    <th>ISBN</th>
+                    <th>Disponible</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.isbn }}</td>
+                    <td>{{ book.available }}/{{ book.quantity }}</td>
+                    <td>
+                        {% if session.get('user_id') %}
+                            {% if book.available > 0 %}
+                                <form action="{{ url_for('borrow_book', book_id=book.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit">Emprunter</button>
+                                </form>
+                            {% endif %}
+                            {% if session.get('role') == 'admin' %}
+                                <a href="{{ url_for('edit_book', id=book.id) }}" class="button">Modifier</a>
+                                <form action="{{ url_for('delete_book', id=book.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')">Supprimer</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
