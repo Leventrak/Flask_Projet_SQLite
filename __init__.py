@@ -14,6 +14,10 @@ def est_authentifie():
 
 @app.route('/')
 def hello_world():
+    return render_template('fiche_nom.html')
+
+@app.route('/')
+def hello_world():
     return render_template('hello.html')
 
 @app.route('/lecture')
