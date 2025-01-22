@@ -4,18 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authentification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+        form {
+            margin: 20px 0;
+        }
+        input {
+            margin: 5px 0;
+            padding: 8px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h2>Authentification</h2>
+    <h1>{{ "Connexion Utilisateur" if user_login else "Connexion Administrateur" }}</h1>
     {% if error %}
-        <p style="color: red;">Identifiant ou mot de passe incorrect.</p>
+    <p class="error">Identifiants incorrects</p>
     {% endif %}
     <form action="{{ url_for('authentification') }}" method="post">
-        <label for="username">Nom d'utilisateur:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="password">Mot de passe:</label><br>
-        <input type="password" id="password" name="password"><br><br>
+        <div>
+            <label for="username">Nom d'utilisateur:</label><br>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Mot de passe:</label><br>
+            <input type="password" id="password" name="password" required>
+        </div>
         <input type="submit" value="Se connecter">
     </form>
+    {% if user_login %}
+    <p>Identifiants : user/12345</p>
+    {% else %}
+    <p>Identifiants : admin/password</p>
+    {% endif %}
 </body>
 </html>

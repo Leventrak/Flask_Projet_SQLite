@@ -12,6 +12,10 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # Clé secrète pour les sessions
 def est_authentifie():
     return session.get('authentifie')
 
+# Fonction pour vérifier l'authentification utilisateur
+def est_utilisateur():
+    return session.get('utilisateur_authentifie')
+
 @app.route('/')
 def hello_world():
     return render_template('hello.html')
@@ -38,6 +42,17 @@ def authentification():
             return render_template('formulaire_authentification.html', error=True)
 
     return render_template('formulaire_authentification.html', error=False)
+
+@app.route('/authentification_user', methods=['GET', 'POST'])
+def authentification_user():
+    if request.method == 'POST':
+        if request.form['username'] == 'user' and request.form['password'] == '12345':
+            session['utilisateur_authentifie'] = True
+            return redirect(url_for('fiche_nom'))
+        else:
+            return render_template('formulaire_authentification.html', error=True, user_login=True)
+
+    return render_template('formulaire_authentification.html', error=False, user_login=True)
 
 @app.route('/fiche_client/<int:post_id>')
 def Readfiche(post_id):
@@ -76,6 +91,22 @@ def enregistrer_client():
     conn.commit()
     conn.close()
     return redirect('/consultation/')  # Rediriger vers la page d'accueil après l'enregistrement
+
+@app.route('/fiche_nom/', methods=['GET', 'POST'])
+def fiche_nom():
+    if not est_utilisateur():
+        return redirect(url_for('authentification_user'))
+    
+    if request.method == 'POST':
+        nom_recherche = request.form.get('nom', '')
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM clients WHERE nom LIKE ?', ('%' + nom_recherche + '%',))
+        data = cursor.fetchall()
+        conn.close()
+        return render_template('read_data.html', data=data)
+    
+    return render_template('recherche_nom.html')
                                                                                                                                        
 if __name__ == "__main__":
   app.run(debug=True)
