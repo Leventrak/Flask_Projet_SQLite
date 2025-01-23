@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Livres</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestion de Livres</h1>
+    
+    <form id="bookForm">
+        <input type="text" id="title" placeholder="Titre du livre" required>
+        <input type="text" id="author" placeholder="Auteur" required>
+        <button type="submit">Ajouter un livre</button>
+    </form>
+
+    <table id="bookTable">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="bookList"></tbody>
+    </table>
+
+    <script>
+        // Fonction pour charger les livres depuis localStorage
+        function loadBooks() {
+            return JSON.parse(localStorage.getItem('books')) || [];
+        }
+
+        // Fonction pour sauvegarder les livres dans localStorage
+        function saveBooks(books) {
+            localStorage.setItem('books', JSON.stringify(books));
+        }
+
+        // Fonction pour afficher les livres
+        function displayBooks() {
+            const books = loadBooks();
+            const bookList = document.getElementById('bookList');
+            bookList.innerHTML = '';
+            books.forEach((book, index) => {
+                const row = bookList.insertRow();
+                row.insertCell(0).textContent = book.title;
+                row.insertCell(1).textContent = book.author;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Supprimer';
+                deleteButton.onclick = () => deleteBook(index);
+                row.insertCell(2).appendChild(deleteButton);
+            });
+        }
+
+        // Fonction pour ajouter un livre
+        function addBook(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const books = loadBooks();
+            books.push({ title, author });
+            saveBooks(books);
+            displayBooks();
+            document.getElementById('bookForm').reset();
+        }
+
+        // Fonction pour supprimer un livre
+        function deleteBook(index) {
+            const books = loadBooks();
+            books.splice(index, 1);
+            saveBooks(books);
+            displayBooks();
+        }
+
+        // Écouter l'événement de soumission du formulaire
+        document.getElementById('bookForm').addEventListener('submit', addBook);
+
+        // Afficher les livres au chargement de la page
+        displayBooks();
+    </script>
+</body>
+</html>
