@@ -1,92 +1,158 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Bibliothèque - Liste des livres</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="navbar">
-        <div class="container">
-            <a href="{{ url_for('index') }}" class="logo">📚 Bibliothèque</a>
-            <nav>
-                <a href="{{ url_for('list_books') }}">Livres</a>
-                {% if session.get('user_id') %}
-                    <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
-                    {% if session.get('role') == 'admin' %}
-                        <a href="{{ url_for('add_book') }}">Ajouter un livre</a>
-                    {% endif %}
-                    <a href="{{ url_for('logout') }}">Déconnexion</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}">Connexion</a>
-                {% endif %}
-            </nav>
+{% extends "base.html" %}
+
+{% block title %}Bibliothèque - Catalogue{% endblock %}
+
+{% block content %}
+<div x-data="{ 
+    searchQuery: '', 
+    books: [],
+    filteredBooks: [],
+    init() {
+        this.books = Array.from(document.querySelectorAll('tr.book-item')).map(row => ({
+            title: row.getAttribute('data-title'),
+            author: row.getAttribute('data-author'),
+            isbn: row.getAttribute('data-isbn'),
+            available: parseInt(row.getAttribute('data-available')),
+            quantity: parseInt(row.getAttribute('data-quantity')),
+            id: parseInt(row.getAttribute('data-id'))
+        }));
+        this.filteredBooks = this.books;
+    },
+    search() {
+        const query = this.searchQuery.toLowerCase();
+        this.filteredBooks = this.books.filter(book => 
+            book.title.toLowerCase().includes(query) ||
+            book.author.toLowerCase().includes(query) ||
+            book.isbn.toLowerCase().includes(query)
+        );
+    }
+}">
+    <!-- Header Section -->
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-3xl font-bold leading-7 text-gray-900 sm:text-4xl sm:truncate">
+                Catalogue des livres
+            </h2>
         </div>
+        {% if session.get('role') == 'admin' %}
+        <div class="mt-4 flex md:mt-0 md:ml-4">
+            <a href="{{ url_for('add_book') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Ajouter un livre
+            </a>
+        </div>
+        {% endif %}
     </div>
 
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="message {{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <div class="card">
-            <h1>Catalogue des livres</h1>
-            
-            <div class="search-container">
-                <input type="text" id="searchInput" onkeyup="filterTable('searchInput', 'booksTable')" 
-                       placeholder="Rechercher un livre..." class="search-input">
+    <!-- Search Section -->
+    <div class="mb-6">
+        <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
             </div>
-
-            <table id="booksTable">
-                <thead>
-                    <tr>
-                        <th>Titre</th>
-                        <th>Auteur</th>
-                        <th>ISBN</th>
-                        <th>Disponibilité</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for book in books %}
-                    <tr class="book-row">
-                        <td>{{ book.title }}</td>
-                        <td>{{ book.author }}</td>
-                        <td>{{ book.isbn }}</td>
-                        <td>
-                            <span class="availability {% if book.available == 0 %}not-available{% endif %}">
-                                {{ book.available }}/{{ book.quantity }}
-                            </span>
-                        </td>
-                        <td class="actions">
-                            {% if session.get('user_id') %}
-                                {% if book.available > 0 %}
-                                    <form action="{{ url_for('borrow_book', book_id=book.id) }}" method="POST" style="display: inline;">
-                                        <button type="submit" class="button">Emprunter</button>
-                                    </form>
-                                {% endif %}
-                                {% if session.get('role') == 'admin' %}
-                                    <a href="{{ url_for('edit_book', id=book.id) }}" class="button button-secondary">Modifier</a>
-                                    <form action="{{ url_for('delete_book', id=book.id) }}" method="POST" style="display: inline;">
-                                        <button type="submit" class="button button-danger" 
-                                                onclick="return confirmAction('Êtes-vous sûr de vouloir supprimer ce livre ?')">
-                                            Supprimer
-                                        </button>
-                                    </form>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <input type="text" 
+                   x-model="searchQuery" 
+                   @input="search"
+                   class="focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 pr-12 sm:text-sm border-gray-300 rounded-lg"
+                   placeholder="Rechercher par titre, auteur ou ISBN...">
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
+    <!-- Books Grid -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <template x-for="book in filteredBooks" :key="book.id">
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" x-text="book.title"></h3>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              :class="book.available > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                            <span x-text="book.available + '/' + book.quantity"></span>
+                        </span>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500">
+                            <span class="font-medium">Auteur:</span>
+                            <span x-text="book.author"></span>
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <span class="font-medium">ISBN:</span>
+                            <span x-text="book.isbn"></span>
+                        </p>
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-2">
+                        {% if session.get('user_id') %}
+                            <template x-if="book.available > 0">
+                                <form :action="'/borrow_book/' + book.id" method="POST" class="inline">
+                                    <button type="submit" 
+                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                        <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        Emprunter
+                                    </button>
+                                </form>
+                            </template>
+                            {% if session.get('role') == 'admin' %}
+                                <a :href="'/edit_book/' + book.id" 
+                                   class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                    <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                    </svg>
+                                    Modifier
+                                </a>
+                                <form :action="'/delete_book/' + book.id" method="POST" class="inline"
+                                      @submit.prevent="if (await confirmAction('Êtes-vous sûr de vouloir supprimer ce livre ?')) $el.submit()">
+                                    <button type="submit" 
+                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Supprimer
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Book data -->
+    <div class="hidden">
+        {% for book in books %}
+        <tr class="book-item"
+            data-id="{{ book.id }}"
+            data-title="{{ book.title }}"
+            data-author="{{ book.author }}"
+            data-isbn="{{ book.isbn }}"
+            data-available="{{ book.available }}"
+            data-quantity="{{ book.quantity }}">
+        </tr>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Animation d'entrée pour les cartes de livres
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.book-card').forEach(card => {
+        observer.observe(card);
+    });
+</script>
+{% endblock %}

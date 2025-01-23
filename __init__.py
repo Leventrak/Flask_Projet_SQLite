@@ -37,7 +37,33 @@ def admin_required(f):
 # Routes principales
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Récupérer les statistiques
+    conn = get_db()
+    
+    # Total des livres disponibles
+    total_books = conn.execute('SELECT SUM(available) FROM books').fetchone()[0]
+    
+    # Total des emprunts actifs
+    active_loans = conn.execute('SELECT COUNT(*) FROM loans WHERE return_date IS NULL').fetchone()[0]
+    
+    # Total des utilisateurs
+    total_users = conn.execute('SELECT COUNT(*) FROM users').fetchone()[0]
+    
+    # Récupérer les 3 derniers livres ajoutés
+    recent_books = conn.execute('''
+        SELECT title, author, quantity, available 
+        FROM books 
+        ORDER BY id DESC 
+        LIMIT 3
+    ''').fetchall()
+    
+    conn.close()
+    
+    return render_template('index.html', 
+                         total_books=total_books,
+                         active_loans=active_loans,
+                         total_users=total_users,
+                         recent_books=recent_books)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
