@@ -3,20 +3,25 @@
 <head>
     <title>Bibliothèque - Liste des livres</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="navbar">
-        <a href="{{ url_for('index') }}">Accueil</a>
-        <a href="{{ url_for('list_books') }}">Livres</a>
-        {% if session.get('user_id') %}
-            <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
-            {% if session.get('role') == 'admin' %}
-                <a href="{{ url_for('add_book') }}">Ajouter un livre</a>
-            {% endif %}
-            <a href="{{ url_for('logout') }}">Déconnexion</a>
-        {% else %}
-            <a href="{{ url_for('login') }}">Connexion</a>
-        {% endif %}
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">📚 Bibliothèque</a>
+            <nav>
+                <a href="{{ url_for('list_books') }}">Livres</a>
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
+                    {% if session.get('role') == 'admin' %}
+                        <a href="{{ url_for('add_book') }}">Ajouter un livre</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}">Déconnexion</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Connexion</a>
+                {% endif %}
+            </nav>
+        </div>
     </div>
 
     <div class="container">
@@ -28,44 +33,60 @@
             {% endif %}
         {% endwith %}
 
-        <h1>Liste des livres</h1>
+        <div class="card">
+            <h1>Catalogue des livres</h1>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" onkeyup="filterTable('searchInput', 'booksTable')" 
+                       placeholder="Rechercher un livre..." class="search-input">
+            </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Auteur</th>
-                    <th>ISBN</th>
-                    <th>Disponible</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for book in books %}
-                <tr>
-                    <td>{{ book.title }}</td>
-                    <td>{{ book.author }}</td>
-                    <td>{{ book.isbn }}</td>
-                    <td>{{ book.available }}/{{ book.quantity }}</td>
-                    <td>
-                        {% if session.get('user_id') %}
-                            {% if book.available > 0 %}
-                                <form action="{{ url_for('borrow_book', book_id=book.id) }}" method="POST" style="display: inline;">
-                                    <button type="submit">Emprunter</button>
-                                </form>
+            <table id="booksTable">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Auteur</th>
+                        <th>ISBN</th>
+                        <th>Disponibilité</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr class="book-row">
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.isbn }}</td>
+                        <td>
+                            <span class="availability {% if book.available == 0 %}not-available{% endif %}">
+                                {{ book.available }}/{{ book.quantity }}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            {% if session.get('user_id') %}
+                                {% if book.available > 0 %}
+                                    <form action="{{ url_for('borrow_book', book_id=book.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="button">Emprunter</button>
+                                    </form>
+                                {% endif %}
+                                {% if session.get('role') == 'admin' %}
+                                    <a href="{{ url_for('edit_book', id=book.id) }}" class="button button-secondary">Modifier</a>
+                                    <form action="{{ url_for('delete_book', id=book.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="button button-danger" 
+                                                onclick="return confirmAction('Êtes-vous sûr de vouloir supprimer ce livre ?')">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                {% endif %}
                             {% endif %}
-                            {% if session.get('role') == 'admin' %}
-                                <a href="{{ url_for('edit_book', id=book.id) }}" class="button">Modifier</a>
-                                <form action="{{ url_for('delete_book', id=book.id) }}" method="POST" style="display: inline;">
-                                    <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')">Supprimer</button>
-                                </form>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

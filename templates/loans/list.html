@@ -3,13 +3,18 @@
 <head>
     <title>Bibliothèque - Mes emprunts</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="navbar">
-        <a href="{{ url_for('index') }}">Accueil</a>
-        <a href="{{ url_for('list_books') }}">Livres</a>
-        <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
-        <a href="{{ url_for('logout') }}">Déconnexion</a>
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">📚 Bibliothèque</a>
+            <nav>
+                <a href="{{ url_for('list_books') }}">Livres</a>
+                <a href="{{ url_for('list_loans') }}">Mes emprunts</a>
+                <a href="{{ url_for('logout') }}">Déconnexion</a>
+            </nav>
+        </div>
     </div>
 
     <div class="container">
@@ -21,42 +26,60 @@
             {% endif %}
         {% endwith %}
 
-        <h1>{% if session.get('role') == 'admin' %}Tous les emprunts{% else %}Mes emprunts{% endif %}</h1>
+        <div class="card">
+            <h1>{% if session.get('role') == 'admin' %}Tous les emprunts{% else %}Mes emprunts{% endif %}</h1>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Livre</th>
-                    {% if session.get('role') == 'admin' %}
-                        <th>Utilisateur</th>
-                    {% endif %}
-                    <th>Date d'emprunt</th>
-                    <th>Date de retour prévue</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for loan in loans %}
-                <tr>
-                    <td>{{ loan.title }}</td>
-                    {% if session.get('role') == 'admin' %}
-                        <td>{{ loan.username }}</td>
-                    {% endif %}
-                    <td>{{ loan.loan_date }}</td>
-                    <td>{{ loan.due_date }}</td>
-                    <td>{{ loan.status }}</td>
-                    <td>
-                        {% if loan.status == 'active' %}
-                            <form action="{{ url_for('return_book', id=loan.id) }}" method="POST">
-                                <button type="submit">Retourner</button>
-                            </form>
+            <div class="search-container">
+                <input type="text" id="searchInput" onkeyup="filterTable('searchInput', 'loansTable')" 
+                       placeholder="Rechercher un emprunt..." class="search-input">
+            </div>
+
+            <table id="loansTable">
+                <thead>
+                    <tr>
+                        <th>Livre</th>
+                        {% if session.get('role') == 'admin' %}
+                            <th>Utilisateur</th>
                         {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <th>Date d'emprunt</th>
+                        <th>Date de retour prévue</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %}
+                    <tr class="loan-row" data-due-date="{{ loan.due_date }}" data-status="{{ loan.status }}">
+                        <td>{{ loan.title }}</td>
+                        {% if session.get('role') == 'admin' %}
+                            <td>{{ loan.username }}</td>
+                        {% endif %}
+                        <td>{{ loan.loan_date }}</td>
+                        <td>{{ loan.due_date }}</td>
+                        <td>
+                            <span class="status-badge status-{{ loan.status }}">
+                                {{ loan.status }}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            {% if loan.status == 'active' %}
+                                <form action="{{ url_for('return_book', id=loan.id) }}" method="POST">
+                                    <button type="submit" class="button">Retourner</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            checkOverdue();
+        });
+    </script>
 </body>
 </html>

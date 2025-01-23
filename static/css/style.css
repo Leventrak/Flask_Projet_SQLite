@@ -1,105 +1,387 @@
-/* Style général */
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 20px;
-    background-color: #f4f4f4;
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #3b82f6;
+    --accent-color: #60a5fa;
+    --background-color: #f8fafc;
+    --text-color: #1e293b;
+    --error-color: #ef4444;
+    --success-color: #22c55e;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
 }
 
+/* Reset et base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    min-height: 100vh;
+}
+
+/* Layout */
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 2rem;
 }
 
 /* Navigation */
 .navbar {
-    background-color: #333;
-    color: white;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 1rem;
-    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
 }
 
 .navbar a {
-    color: white;
+    color: var(--text-color);
     text-decoration: none;
     padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed);
 }
 
 .navbar a:hover {
-    background-color: #555;
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform var(--transition-speed);
+}
+
+.card:hover {
+    transform: translateY(-2px);
 }
 
 /* Formulaires */
 form {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-weight: 500;
 }
 
 input[type="text"],
 input[type="password"],
-input[type="number"] {
+input[type="number"],
+input[type="date"],
+select,
+textarea {
     width: 100%;
-    padding: 8px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
 }
 
-button, .button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+/* Boutons */
+.button,
+button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
     cursor: pointer;
+    transition: all var(--transition-speed);
 }
 
-button:hover, .button:hover {
-    background-color: #45a049;
+.button:hover,
+button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.button-secondary {
+    background-color: #e2e8f0;
+    color: var(--text-color);
+}
+
+.button-secondary:hover {
+    background-color: #cbd5e1;
 }
 
 /* Tableaux */
 table {
     width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    background-color: white;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.5rem 0;
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
-    padding: 12px;
+    padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 th {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #f8fafc;
+    font-weight: 600;
 }
 
 tr:hover {
-    background-color: #f5f5f5;
+    background-color: #f1f5f9;
 }
 
 /* Messages */
 .message {
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 4px;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    animation: slideIn 0.3s ease-out;
 }
 
 .success {
-    background-color: #dff0d8;
-    border: 1px solid #d6e9c6;
-    color: #3c763d;
+    background-color: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #166534;
 }
 
 .error {
-    background-color: #f2dede;
-    border: 1px solid #ebccd1;
-    color: #a94442;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    max-width: 500px;
+    width: 90%;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* États spéciaux */
+.overdue {
+    background-color: #fee2e2;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .navbar .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* Logo */
+.logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+/* Search */
+.search-container {
+    margin-bottom: 1.5rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-returned {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.status-overdue {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Availability */
+.availability {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.not-available {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.button-danger {
+    background-color: #ef4444;
+}
+
+.button-danger:hover {
+    background-color: #dc2626;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    .actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .actions form {
+        width: 100%;
+    }
+    
+    .actions button {
+        width: 100%;
+    }
 }
