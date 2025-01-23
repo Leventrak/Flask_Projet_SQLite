@@ -11,11 +11,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # Clé secrète pour les sessions
 # Fonction pour créer une clé "authentifie" dans la session utilisateur
 def est_authentifie():
     return session.get('authentifie')
-    
-    @app.route('/Recherche_livre.html')
-def Recherche_livre():
-    return render_template('Recherche_livre.html')
-    
+       
 @app.route('/Gestion_des_livres.html')
 def Gestion_des_livres():
     return render_template('Gestion_des_livres.html')
