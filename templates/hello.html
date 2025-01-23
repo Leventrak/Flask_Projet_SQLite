@@ -3,48 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Application HTML</title>
+    <title>Menu Interface</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
-        h1 {
-            color: #333;
+        .menu-container {
+            background-color: #333;
         }
-        #contenu {
-            background-color: #f4f4f4;
-            padding: 20px;
-            border-radius: 100px;
+        .menu {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
-        button {
-            background-color: #4CAF50;
+        .menu li {
+            float: left;
+        }
+        .menu li a {
+            display: block;
             color: white;
-            padding: 10px 15px;
-            border: 10px;
-            border-radius: 4px;
-            cursor: pointer;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
         }
-        button {
-            background-color: #45a049;
+        .menu li a:hover {
+            background-color: #111;
+        }
+        .menu-icon {
+            display: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            color: white;
+        }
+        @media screen and (max-width: 600px) {
+            .menu li {display: none;}
+            .menu-icon {
+                float: right;
+                display: block;
+            }
+            .menu.responsive {position: relative;}
+            .menu.responsive li {
+                float: none;
+                display: block;
+                text-align: left;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Bienvenue dans mon application HTML</h1>
-    <div id="contenu">
-        <p>Ceci est un exemple d'application HTML simple.</p>
-        <button onclick="saluer()">Cliquez-moi !</button>
+    <div class="menu-container">
+        <ul class="menu" id="myMenu">
+            <li><a href="#home">Accueil</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about">À propos</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="menu-icon" onclick="toggleMenu()">&#9776;</li>
+        </ul>
     </div>
 
     <script>
-        function saluer() {
-            alert("Bonjour ! Bienvenue dans mon application HTML !");
+        function toggleMenu() {
+            var x = document.getElementById("myMenu");
+            if (x.className === "menu") {
+                x.className += " responsive";
+            } else {
+                x.className = "menu";
+            }
         }
     </script>
 </body>
 </html>
-
-
