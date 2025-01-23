@@ -3,77 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Interface</title>
+    <title>Gestion de Livres</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-
-            .menu-container {
-            background-color: #353;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        
-        .menu {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
+        h1 {
+            color: #333;
         }
-        .menu li {
-            float: left;
+        form {
+            margin-bottom: 20px;
         }
-        .menu li a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            transition: background-color 0.3s;
+        input, button {
+            margin: 5px 0;
+            padding: 5px;
         }
-        .menu li a:hover {
-            background-color: #111;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .menu-icon {
-            display: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            color: white;
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
-        @media screen and (max-width: 600px) {
-            .menu li {display: none;}
-            .menu-icon {
-                float: right;
-                display: block;
-            }
-            .menu.responsive {position: relative;}
-            .menu.responsive li {
-                float: none;
-                display: block;
-                text-align: left;
-            }
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-    <div class="menu-container">
-        <ul class="menu" id="myMenu">
-            <li><a href="#Accueil">Accueil</a></li>
-            <li><a href="#Recherche">Recherche universitaire</a></li>
-                                                            <li><a href="#Connexion">Connexion</a></li>
-            <li class="menu-icon" onclick="toggleMenu()">&#9776;</li>
-        </ul>
-    </div>
+    <h1>Gestion de Livres</h1>
+    
+    <form id="bookForm">
+        <input type="text" id="title" placeholder="Titre du livre" required>
+        <input type="text" id="author" placeholder="Auteur" required>
+        <button type="submit">Ajouter un livre</button>
+    </form>
+
+    <table id="bookTable">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="bookList"></tbody>
+    </table>
 
     <script>
-        function toggleMenu() {
-            var x = document.getElementById("myMenu");
-            if (x.className === "menu") {
-                x.className += " responsive";
-            } else {
-                x.className = "menu";
-            }
+        // Fonction pour charger les livres depuis localStorage
+        function loadBooks() {
+            return JSON.parse(localStorage.getItem('books')) || [];
         }
+
+        // Fonction pour sauvegarder les livres dans localStorage
+        function saveBooks(books) {
+            localStorage.setItem('books', JSON.stringify(books));
+        }
+
+        // Fonction pour afficher les livres
+        function displayBooks() {
+            const books = loadBooks();
+            const bookList = document.getElementById('bookList');
+            bookList.innerHTML = '';
+            books.forEach((book, index) => {
+                const row = bookList.insertRow();
+                row.insertCell(0).textContent = book.title;
+                row.insertCell(1).textContent = book.author;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Supprimer';
+                deleteButton.onclick = () => deleteBook(index);
+                row.insertCell(2).appendChild(deleteButton);
+            });
+        }
+
+        // Fonction pour ajouter un livre
+        function addBook(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const books = loadBooks();
+            books.push({ title, author });
+            saveBooks(books);
+            displayBooks();
+            document.getElementById('bookForm').reset();
+        }
+
+        // Fonction pour supprimer un livre
+        function deleteBook(index) {
+            const books = loadBooks();
+            books.splice(index, 1);
+            saveBooks(books);
+            displayBooks();
+        }
+
+        // Écouter l'événement de soumission du formulaire
+        document.getElementById('bookForm').addEventListener('submit', addBook);
+
+        // Afficher les livres au chargement de la page
+        displayBooks();
     </script>
 </body>
 </html>
