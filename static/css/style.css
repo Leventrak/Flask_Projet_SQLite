@@ -714,6 +714,11 @@ body {
     color: var(--danger-color);
 }
 
+.status-returned {
+    background-color: #e5e7eb;
+    color: var(--secondary-color);
+}
+
 /* Forms */
 .form-group {
     margin-bottom: 1rem;
@@ -759,6 +764,98 @@ th, td {
 th {
     background-color: var(--background-color);
     font-weight: 600;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state p {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+/* Table styles */
+.table-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #f8fafc;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+td {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.loan-row:hover {
+    background-color: #f8fafc;
+}
+
+.loan-row.overdue {
+    background-color: #fee2e2;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: #dcfce7;
+    color: var(--success-color);
+}
+
+.status-overdue {
+    background-color: #fee2e2;
+    color: var(--danger-color);
+}
+
+.status-returned {
+    background-color: #e5e7eb;
+    color: var(--secondary-color);
+}
+
+/* Search input */
+.search-container {
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 1rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* Responsive Design */

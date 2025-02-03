@@ -143,24 +143,56 @@ def delete_book(id):
 @login_required
 def list_loans():
     db = get_db()
-    if session['role'] == 'admin':
-        loans = db.execute('''
-            SELECT loans.*, books.title, users.username 
-            FROM loans 
-            JOIN books ON loans.book_id = books.id 
-            JOIN users ON loans.user_id = users.id 
-            ORDER BY loan_date DESC
-        ''').fetchall()
-    else:
-        loans = db.execute('''
-            SELECT loans.*, books.title 
-            FROM loans 
-            JOIN books ON loans.book_id = books.id 
-            WHERE user_id = ? 
-            ORDER BY loan_date DESC
-        ''', (session['user_id'],)).fetchall()
-    db.close()
-    return render_template('loans/list.html', loans=loans)
+    try:
+        if session['role'] == 'admin':
+            loans = db.execute('''
+                SELECT l.id, l.loan_date, l.due_date, l.return_date, l.status,
+                       b.title, u.username,
+                       CASE 
+                           WHEN l.return_date IS NULL AND l.due_date < datetime('now', 'localtime')
+                           THEN 1 
+                           ELSE 0 
+                       END as is_overdue
+                FROM loans l
+                JOIN books b ON l.book_id = b.id 
+                JOIN users u ON l.user_id = u.id 
+                ORDER BY l.loan_date DESC
+            ''').fetchall()
+        else:
+            loans = db.execute('''
+                SELECT l.id, l.loan_date, l.due_date, l.return_date, l.status,
+                       b.title,
+                       CASE 
+                           WHEN l.return_date IS NULL AND l.due_date < datetime('now', 'localtime')
+                           THEN 1 
+                           ELSE 0 
+                       END as is_overdue
+                FROM loans l
+                JOIN books b ON l.book_id = b.id 
+                WHERE l.user_id = ? 
+                ORDER BY l.loan_date DESC
+            ''', (session['user_id'],)).fetchall()
+        
+        # Convertir les résultats en liste de dictionnaires
+        loans_list = []
+        for loan in loans:
+            loan_dict = dict(loan)
+            # Convertir les dates en objets datetime
+            for date_field in ['loan_date', 'due_date', 'return_date']:
+                if loan_dict.get(date_field):
+                    try:
+                        loan_dict[date_field] = datetime.strptime(loan_dict[date_field], '%Y-%m-%d %H:%M:%S')
+                    except (ValueError, TypeError):
+                        loan_dict[date_field] = None
+            loans_list.append(loan_dict)
+        
+        return render_template('loans/list.html', loans=loans_list)
+        
+    except Exception as e:
+        flash(f'Une erreur est survenue : {str(e)}', 'error')
+        return redirect(url_for('index'))
+    finally:
+        db.close()
 
 @app.route('/loans/borrow/<int:book_id>', methods=['POST'])
 @login_required

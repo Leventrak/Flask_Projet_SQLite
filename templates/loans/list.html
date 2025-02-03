@@ -12,53 +12,82 @@
     </div>
 
     <div class="table-container">
-        <table id="loansTable">
-            <thead>
-                <tr>
-                    <th>Livre</th>
-                    {% if session.get('role') == 'admin' %}
-                        <th>Utilisateur</th>
-                    {% endif %}
-                    <th>Date d'emprunt</th>
-                    <th>Date de retour prévue</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for loan in loans %}
-                    <tr class="loan-row {% if loan.is_overdue %}overdue{% endif %}" 
-                        data-due-date="{{ loan.due_date }}" 
-                        data-status="{{ loan.status }}">
-                        <td>{{ loan.title }}</td>
+        {% if loans %}
+            <table id="loansTable">
+                <thead>
+                    <tr>
+                        <th>Livre</th>
                         {% if session.get('role') == 'admin' %}
-                            <td>{{ loan.username }}</td>
+                            <th>Utilisateur</th>
                         {% endif %}
-                        <td>{{ loan.loan_date.strftime('%d/%m/%Y') }}</td>
-                        <td class="due-date">{{ loan.due_date.strftime('%d/%m/%Y') }}</td>
-                        <td>
-                            {% if loan.return_date %}
-                                <span class="status-badge status-returned">Retourné</span>
-                            {% elif loan.is_overdue %}
-                                <span class="status-badge status-overdue">En retard</span>
-                            {% else %}
-                                <span class="status-badge status-active">En cours</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not loan.return_date %}
-                                <form action="{{ url_for('return_book', id=loan.id) }}" method="POST" style="display: inline;">
-                                    <button type="submit" class="button button-primary">
-                                        Retourner
-                                    </button>
-                                </form>
-                            {% endif %}
-                        </td>
+                        <th>Date d'emprunt</th>
+                        <th>Date de retour prévue</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for loan in loans %}
+                        <tr class="loan-row {% if loan.is_overdue %}overdue{% endif %}">
+                            <td>{{ loan.title }}</td>
+                            {% if session.get('role') == 'admin' %}
+                                <td>{{ loan.username }}</td>
+                            {% endif %}
+                            <td>{{ loan.loan_date.strftime('%d/%m/%Y') if loan.loan_date else 'N/A' }}</td>
+                            <td class="due-date">{{ loan.due_date.strftime('%d/%m/%Y') if loan.due_date else 'N/A' }}</td>
+                            <td>
+                                {% if loan.return_date %}
+                                    <span class="status-badge status-returned">Retourné</span>
+                                {% elif loan.is_overdue %}
+                                    <span class="status-badge status-overdue">En retard</span>
+                                {% else %}
+                                    <span class="status-badge status-active">En cours</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not loan.return_date %}
+                                    <form action="{{ url_for('return_book', id=loan.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="button button-primary">
+                                            Retourner
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <p>Aucun emprunt à afficher.</p>
+                <a href="{{ url_for('list_books') }}" class="button button-primary">Emprunter un livre</a>
+            </div>
+        {% endif %}
     </div>
 </div>
 
+<script>
+function filterTable(inputId, tableId) {
+    var input = document.getElementById(inputId);
+    var filter = input.value.toLowerCase();
+    var table = document.getElementById(tableId);
+    var rows = table.getElementsByTagName("tr");
+
+    for (var i = 1; i < rows.length; i++) {
+        var show = false;
+        var cells = rows[i].getElementsByTagName("td");
+        for (var j = 0; j < cells.length; j++) {
+            var cell = cells[j];
+            if (cell) {
+                var text = cell.textContent || cell.innerText;
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    show = true;
+                    break;
+                }
+            }
+        }
+        rows[i].style.display = show ? "" : "none";
+    }
+}
+</script>
 {% endblock %}
