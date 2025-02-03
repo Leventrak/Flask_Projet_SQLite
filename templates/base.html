@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div class="background-animations">
+        <div class="floating-shape circle"></div>
+        <div class="floating-shape square"></div>
+        <div class="floating-shape triangle"></div>
+    </div>
+
     <nav class="navbar">
         <div class="container">
             <a href="{{ url_for('index') }}" class="nav-brand">📚 BiblioTech</a>
@@ -19,7 +25,7 @@
                     {% endif %}
                     <a href="{{ url_for('logout') }}" class="button button-secondary">Déconnexion</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="button button-primary">Connexion</a>
+                    <a href="{{ url_for('login') }}" class="button button-white">Se connecter</a>
                 {% endif %}
             </div>
         </div>
