@@ -3,159 +3,64 @@
 {% block title %}BiblioTech - Accueil{% endblock %}
 
 {% block content %}
-<div class="relative">
-    <!-- Hero Section -->
-    <div class="relative bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-            <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-                <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-                    <div class="sm:text-center lg:text-left">
-                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                            <span class="block xl:inline">Bienvenue sur</span>
-                            <span class="block text-primary-600 xl:inline">BiblioTech</span>
-                        </h1>
-                        <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                            Découvrez notre collection de livres et gérez vos emprunts en toute simplicité.
-                        </p>
-                        <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                            <div class="rounded-md shadow">
-                                <a href="{{ url_for('list_books') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10">
-                                    Voir le catalogue
-                                </a>
-                            </div>
-                            {% if not session.get('user_id') %}
-                            <div class="mt-3 sm:mt-0 sm:ml-3">
-                                <a href="{{ url_for('login') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 md:py-4 md:text-lg md:px-10">
-                                    Se connecter
-                                </a>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </main>
-            </div>
-        </div>
-        <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-            <div class="h-56 w-full bg-gradient-to-r from-primary-400 to-primary-600 sm:h-72 md:h-96 lg:w-full lg:h-full animate-gradient">
-                <div class="w-full h-full flex items-center justify-center">
-                    <svg class="w-32 h-32 text-white animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                </div>
-            </div>
+<div class="hero">
+    <div class="hero-content">
+        <h1>Bienvenue sur <span class="text-primary">BiblioTech</span></h1>
+        <p class="hero-text">
+            Découvrez notre collection de livres et gérez vos emprunts en toute simplicité.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('list_books') }}" class="button button-primary">
+                Voir le catalogue
+            </a>
+            {% if not session.get('user_id') %}
+                <a href="{{ url_for('login') }}" class="button button-secondary">
+                    Se connecter
+                </a>
+            {% endif %}
         </div>
     </div>
-
-    <!-- Stats Section -->
-    <div class="relative bg-gray-50 pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
-        <div class="absolute inset-0">
-            <div class="bg-white h-1/3 sm:h-2/3"></div>
-        </div>
-        <div class="relative max-w-7xl mx-auto">
-            <div class="text-center">
-                <h2 class="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
-                    Statistiques de la bibliothèque
-                </h2>
-            </div>
-            <div class="mt-12 max-w-lg mx-auto grid gap-5 lg:grid-cols-3 lg:max-w-none">
-                <!-- Total Books -->
-                <div class="flex flex-col rounded-lg shadow-lg overflow-hidden">
-                    <div class="flex-1 bg-white p-6 flex flex-col justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white mx-auto">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                                </svg>
-                            </div>
-                            <p class="mt-4 text-center text-4xl font-extrabold text-gray-900">
-                                {{ total_books }}
-                            </p>
-                            <p class="mt-2 text-center text-base text-gray-500">
-                                Livres disponibles
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Loans -->
-                <div class="flex flex-col rounded-lg shadow-lg overflow-hidden">
-                    <div class="flex-1 bg-white p-6 flex flex-col justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white mx-auto">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <p class="mt-4 text-center text-4xl font-extrabold text-gray-900">
-                                {{ active_loans }}
-                            </p>
-                            <p class="mt-2 text-center text-base text-gray-500">
-                                Emprunts en cours
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Total Users -->
-                <div class="flex flex-col rounded-lg shadow-lg overflow-hidden">
-                    <div class="flex-1 bg-white p-6 flex flex-col justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white mx-auto">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                                </svg>
-                            </div>
-                            <p class="mt-4 text-center text-4xl font-extrabold text-gray-900">
-                                {{ total_users }}
-                            </p>
-                            <p class="mt-2 text-center text-base text-gray-500">
-                                Utilisateurs inscrits
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Books Section -->
-    {% if recent_books %}
-    <div class="bg-white pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
-        <div class="relative max-w-lg mx-auto divide-y-2 divide-gray-200 lg:max-w-7xl">
-            <div class="text-center">
-                <h2 class="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
-                    Derniers ajouts
-                </h2>
-                <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
-                    Découvrez les derniers livres ajoutés à notre collection
-                </p>
-            </div>
-            <div class="mt-12 grid gap-16 pt-12 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-12">
-                {% for book in recent_books %}
-                <div class="animate__animated animate__fadeInUp">
-                    <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                        <div class="p-6">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-xl font-semibold text-gray-900">{{ book.title }}</h3>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ 'bg-green-100 text-green-800' if book.available > 0 else 'bg-red-100 text-red-800' }}">
-                                    {{ book.available }}/{{ book.quantity }}
-                                </span>
-                            </div>
-                            <p class="mt-3 text-base text-gray-500">
-                                {{ book.author }}
-                            </p>
-                            <div class="mt-6 flex items-center justify-end">
-                                <a href="{{ url_for('list_books') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700">
-                                    Voir plus
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
 </div>
+
+<div class="stats-section">
+    <h2>Statistiques de la bibliothèque</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value">{{ total_books }}</div>
+            <div class="stat-label">Livres disponibles</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">📖</div>
+            <div class="stat-value">{{ active_loans }}</div>
+            <div class="stat-label">Emprunts en cours</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Utilisateurs inscrits</div>
+        </div>
+    </div>
+</div>
+
+{% if recent_books %}
+<div class="recent-books">
+    <h2>Derniers ajouts</h2>
+    <div class="books-grid">
+        {% for book in recent_books %}
+        <div class="book-card">
+            <h3>{{ book.title }}</h3>
+            <p class="book-author">{{ book.author }}</p>
+            <div class="book-availability">
+                <span class="status-badge {% if book.available > 0 %}status-active{% else %}status-overdue{% endif %}">
+                    {{ book.available }}/{{ book.quantity }} disponible(s)
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 {% endblock %}

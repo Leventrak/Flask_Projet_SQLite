@@ -209,3 +209,5 @@ def return_book(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+application = app  # Pour uWSGI
